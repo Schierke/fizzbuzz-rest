@@ -1,7 +1,10 @@
 # fizzbuzz-backend
 
 ## Introduction
+Providing a fizzbuzz calculation using REST API
 
+## Getting started
+Before you start, make sure you have ```golang``` and ```docker``` installed with lastest version
 
 ## INSTALL
 
@@ -23,4 +26,4 @@
 - Testify - tool for code testing
 - pgx - create connection pool to PostgreSQL
 - cobra - CLI
-- gomock & sqlmock: mocks
+- gomock & pgxmock: mocks
