@@ -38,19 +38,19 @@ func (h *handler) CreateFizzBuzzString(w http.ResponseWriter, r *http.Request) {
 	var str1, str2 string
 	if int1, err = strconv.Atoi(r.URL.Query().Get("int1")); err != nil {
 		log.Error().Err(err).Msg("invalid request: can't extract int1")
-		http.Error(w, errInvalidFizzBuzzParams, http.StatusBadRequest)
+		http.Error(w, ErrInvalidFizzBuzzParams, http.StatusBadRequest)
 		return
 	}
 
 	if int2, err = strconv.Atoi(r.URL.Query().Get("int2")); err != nil {
 		log.Error().Err(err).Msg("invalid request: can't extract int2")
-		http.Error(w, errInvalidFizzBuzzParams, http.StatusBadRequest)
+		http.Error(w, ErrInvalidFizzBuzzParams, http.StatusBadRequest)
 		return
 	}
 
 	if limit, err = strconv.Atoi(r.URL.Query().Get("limit")); err != nil {
 		log.Error().Err(err).Msg("invalid request: can't extract limit")
-		http.Error(w, errInvalidFizzBuzzParams, http.StatusBadRequest)
+		http.Error(w, ErrInvalidFizzBuzzParams, http.StatusBadRequest)
 		return
 	}
 
@@ -60,7 +60,8 @@ func (h *handler) CreateFizzBuzzString(w http.ResponseWriter, r *http.Request) {
 	fizzbuzz, err := entity.NewFizzBuzzEntity(int1, int2, limit, str1, str2)
 	if err != nil {
 		log.Error().Err(err).Msg("invalid request: can't extract limit")
-		http.Error(w, errFizzBuzzNotValidate, http.StatusBadRequest)
+		http.Error(w, ErrFizzBuzzNotValidate, http.StatusBadRequest)
+		return
 	}
 
 	ret, err := h.service.CalculateFizzBuzz(ctx, fizzbuzz)
