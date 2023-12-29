@@ -3,17 +3,17 @@ tasks:
   build:
     desc: compile code
     cmds:
-      - go build -o bin/ main.go
+      - go build -o bin/
   migrate:
     desc: Migrate the database schema
     deps: [build]
     cmds:
-      - ./bin hydrate
+      - ./bin/fizzbuzz hydrate
   run:
     desc: run compiled code
     deps: [build]
     cmds:
-      - ./bin serve
+      - ./bin/fizzbuzz serve
   test:
     desc: running all tests
     cmds:
