@@ -10,6 +10,10 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+var (
+	connString = "postgres://%s:%s@localhost:%s/%s?sslmode=disable"
+)
+
 func Start(pgString string) error {
 	// migrating and getting ready for DB.
 	c, err := pgx.Connect(context.Background(), pgString)
@@ -19,7 +23,7 @@ func Start(pgString string) error {
 
 	// TODO: should also stock somewhere
 	tables := []string{
-		"user",
+		"fizzbuzz",
 	}
 	for _, table := range tables {
 		dropTable(c, table)
