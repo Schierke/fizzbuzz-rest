@@ -55,10 +55,7 @@ func Test_SaveFizzbuzz(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		test := test
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-
 			mock, err := pgxmock.NewConn()
 
 			if err != nil {
@@ -121,10 +118,7 @@ func Test_GetMostFrequentRequest(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		test := test
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-
 			mock, err := pgxmock.NewConn()
 
 			if err != nil {
