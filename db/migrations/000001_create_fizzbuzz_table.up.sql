@@ -6,6 +6,5 @@ CREATE TABLE IF NOT EXISTS fizzbuzz
    limit_number INTEGER NOT NULL,
    str1 VARCHAR NOT NULL,
    str2 VARCHAR NOT NULL,
-
    created_at TIMESTAMP NOT NULL
 );

@@ -21,7 +21,7 @@ type PgxIface interface {
 }
 
 const (
-	connString = "postgres://%s:%s@localhost:%s/%s?sslmode=disable"
+	connString = "postgres://%s:%s@%s:%s/%s?sslmode=disable"
 )
 
 // setup DB, initialize pool connection to postgresql
@@ -29,8 +29,9 @@ func SetupDB(config config.AppConfig) (*pgx.Conn, error) {
 	c, err := pgx.Connect(context.Background(), fmt.Sprintf(connString,
 		config.DbUser,
 		config.DbPassword,
+		config.DbHost,
 		config.DbPort,
-		config.DbHost))
+		config.DbName))
 
 	if err != nil {
 		return nil, err

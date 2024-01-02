@@ -13,6 +13,7 @@ type AppConfig struct {
 	DbUser     string `mapstructure:"DB_USER"`
 	DbPassword string `mapstructure:"DB_PASSWORD"`
 	DbPort     string `mapstructure:"DB_PORT"`
+	DbName     string `mapstructure:"DB_NAME"`
 }
 
 func LoadAppConfig(path string) (AppConfig, error) {
