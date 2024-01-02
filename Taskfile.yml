@@ -1,0 +1,26 @@
+version: "3"
+tasks:
+  build:
+    desc: compile code
+    cmds:
+      - go build -o bin/
+  migrate:
+    desc: Migrate the database schema
+    deps: [build]
+    cmds:
+      - ./bin/fizzbuzz hydrate
+  run:
+    desc: run compiled code
+    deps: [build]
+    cmds:
+      - ./bin/fizzbuzz serve
+  test:
+    desc: running all tests
+    cmds:
+      - go test -cover -v ./... -count=1
+  mock: 
+    desc: generating mocks from interface
+    cmds:
+    - |
+      mockgen -source internal/handler/fizzbuzz_handler.go  -destination internal/mocks/mock_fizzbuzz_service.go -package=mocks
+      mockgen -source internal/domain/service/fizzbuzz_service.go  -destination internal/mocks/mock_fizzbuzz_repository.go -package=mocks

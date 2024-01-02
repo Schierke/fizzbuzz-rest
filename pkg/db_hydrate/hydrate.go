@@ -1,49 +1,65 @@
 package dbhydrate
 
 import (
-	"context"
+	"errors"
+	"fizzbuzz/config"
 	"fmt"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/jackc/pgx/v5"
+	"github.com/rs/zerolog/log"
 )
 
-func Start(pgString string) error {
-	// migrating and getting ready for DB.
-	c, err := pgx.Connect(context.Background(), pgString)
-	if err != nil {
-		return err
+const (
+	connString     = "postgres://%s:%s@%s:%s/%s?sslmode=disable"
+	defaultAttempt = 20
+	defautTimeout  = time.Second
+)
+
+func Start(config config.AppConfig) {
+	dbUrl := fmt.Sprintf(connString,
+		config.DbUser,
+		config.DbPassword,
+		config.DbHost,
+		config.DbPort,
+		config.DbName)
+
+	var (
+		attempts = defaultAttempt
+		m        *migrate.Migrate
+		err      error
+	)
+
+	for attempts > 0 {
+		m, err = migrate.New(
+			"file://db/migrations",
+			dbUrl)
+		if err == nil {
+			break
+		}
+
+		log.Info().Msg(fmt.Sprintf("Migrate: postgres is trying to connect, attempts left: %d", attempts))
+		time.Sleep(defautTimeout)
+		attempts--
 	}
 
-	// TODO: should also stock somewhere
-	tables := []string{
-		"user",
+	if err != nil {
+		log.Fatal().Msg(fmt.Sprintf("Migrate: postgres connect error: %s", err))
 	}
-	for _, table := range tables {
-		dropTable(c, table)
+	err = m.Down()
+	if errors.Is(err, migrate.ErrNoChange) {
+		log.Info().Msg("No change on migration")
+	} else if err != nil {
+		log.Fatal().Msg(fmt.Sprintf("Migrate up error:%s", err))
 	}
 
-	err = c.Close(context.Background())
-	if err != nil {
-		return err
-	}
-
-	// Re-migrate
-	m, err := migrate.New(
-		"file://db/migrations",
-		pgString)
-	if err != nil {
-		return err
-	}
-	return m.Up()
-}
-
-func dropTable(c *pgx.Conn, table string) {
-	stmnt := fmt.Sprintf(`DROP TABLE IF EXISTS "%v";`, table)
-	_, err := c.Exec(context.Background(), stmnt)
-	if err != nil {
-		fmt.Printf("error dropping database: %v\n", err)
+	err = m.Up()
+	defer m.Close()
+	if errors.Is(err, migrate.ErrNoChange) {
+		log.Info().Msg("No change on migration")
+	} else if err != nil {
+		log.Fatal().Msg(fmt.Sprintf("Migrate up error:%s", err))
 	}
 }

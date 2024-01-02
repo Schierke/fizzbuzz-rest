@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"fizzbuzz/config"
+	"fmt"
 
 	pgx "github.com/jackc/pgx/v5"
 	pgconn "github.com/jackc/pgx/v5/pgconn"
@@ -18,9 +20,18 @@ type PgxIface interface {
 	Close(context.Context) error
 }
 
+const (
+	connString = "postgres://%s:%s@%s:%s/%s?sslmode=disable"
+)
+
 // setup DB, initialize pool connection to postgresql
-func SetupDB(connString string) (*pgx.Conn, error) {
-	c, err := pgx.Connect(context.Background(), connString)
+func SetupDB(config config.AppConfig) (*pgx.Conn, error) {
+	c, err := pgx.Connect(context.Background(), fmt.Sprintf(connString,
+		config.DbUser,
+		config.DbPassword,
+		config.DbHost,
+		config.DbPort,
+		config.DbName))
 
 	if err != nil {
 		return nil, err

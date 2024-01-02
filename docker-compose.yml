@@ -2,8 +2,7 @@ version: "3.8"
 
 services:
   database:
-    container_name: fizzbuzz
-    image: postgres:14.5
+    image: postgres:alpine
     restart: always
     environment:
       - POSTGRES_USER=pg
@@ -12,7 +11,21 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - db:/var/lib/postgresql/data 
-
+      - database:/var/lib/postgresql/data
+  fizzbuzz:
+    container_name: fizzbuzz
+    build: .
+    image: fizzbuzz
+    ports:
+      - 8080:8080
+    environment:
+      APP_PORT: 8080
+      DB_HOST: database
+      DB_USER: pg
+      DB_PASSWORD: pass
+      DB_PORT: 5432
+      DB_NAME: crud
+    depends_on:
+      - database
 volumes:
-  db:
+  database:

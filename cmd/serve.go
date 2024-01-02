@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"fizzbuzz/config"
 	"fizzbuzz/internal/domain/service"
 	"fizzbuzz/internal/handler"
 	"fizzbuzz/internal/repository"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -22,8 +24,13 @@ var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "start server and listen to HTTP Request",
 	RunE: func(_ *cobra.Command, args []string) error {
+		config, err := config.LoadAppConfig(".")
+		if err != nil {
+			log.Fatal().Err(err).Msg("Unable to load configuration")
+		}
+
 		// setup DB
-		pool, err := repository.SetupDB(connString)
+		pool, err := repository.SetupDB(config)
 		if err != nil {
 			log.Fatal().Msg("Can't setup connection with DB. Abort")
 			return err
@@ -42,7 +49,7 @@ var serveCmd = &cobra.Command{
 
 		//HTTP Handler
 		handler.NewFizzBuzzHandler(service.NewFizzBuzzService(fizzbuzzRepo), r)
-		http.ListenAndServe(":8080", r)
+		http.ListenAndServe(fmt.Sprintf(":%s", config.AppPort), r)
 		return nil
 	},
 }
